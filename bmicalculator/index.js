@@ -1,0 +1,42 @@
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  res.render('index');
+});
+
+app.post('/calculate', (req, res) => {
+  const gender = req.body.gender;
+  const age = req.body.age;
+  const weight = parseFloat(req.body.weight);
+  const height = parseFloat(req.body.height);
+ 
+  const bmi = weight / (height * height);
+
+  let bmiState = '';
+  if (bmi > 18 && bmi <= 24.9) {
+    bmiState = 'Normal';
+  } else if (bmi > 24.9 && bmi <= 29.9) {
+    bmiState = 'Overweight';
+  } else if (bmi >= 30) {
+    bmiState = 'Obesity';
+  } else {
+    bmiState = 'Underweight';
+  }
+
+  res.render('result', { bmi: bmi.toFixed(2), bmiState });
+});
+
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
+});

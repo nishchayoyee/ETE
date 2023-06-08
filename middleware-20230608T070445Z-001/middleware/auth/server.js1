@@ -1,0 +1,42 @@
+const express = require('express');
+const session = require('express-session');
+const auth = require('./middleware');
+const app = express();
+app.use(session({
+    secret: 'mysecretkey',
+    resave: false,
+    saveUninitialized: true
+  }));
+  app.set('view engine', 'ejs');
+  app.set('views', __dirname + '/views');
+  
+
+  app.get('/login', (req, res) => {
+    res.render('login');
+  });
+  
+  app.post('/login', (req, res) => {
+    // handle the login form submission
+    const { username, password } = req.body;
+  
+    // check if the user credentials are valid
+    if (username === 'myusername' && password === 'mypassword') {
+      // set the session variable for the user
+      req.session.userid = 1; // assuming the user ID is 1
+  
+      // redirect the user to the dashboard page
+      res.redirect('/dashboard');
+    } else {
+      // if the credentials are invalid, render the login page with an error message
+      res.render('login', { error: 'Invalid username or password' });
+    }
+  });
+  
+  app.get('/dashboard', auth, (req, res) => {
+    res.send('Welcome to the dashboard!');
+  });
+
+  app.listen(3000, () => {
+  console.log('Server started on port 3000');
+});
+  
